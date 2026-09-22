@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>IFB Delivery Tracker</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f4f7fb;
+            color: #222;
+        }
+
+        /* HEADER */
+
+        header {
+            background: #0057b8;
+            color: white;
+            padding: 18px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 26px;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+
+        .app-name {
+            font-size: 18px;
+        }
+
+        /* MAIN */
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            padding: 30px;
+        }
+
+        .welcome {
+            margin-bottom: 25px;
+        }
+
+        .welcome h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .welcome p {
+            color: #666;
+        }
+
+        /* SUMMARY CARDS */
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            padding: 22px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+        }
+
+        .card-title {
+            color: #777;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .card-number {
+            font-size: 30px;
+            font-weight: bold;
+        }
+
+        /* ACTION AREA */
+
+        .actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .search {
+            padding: 12px 15px;
+            width: 300px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        .button {
+            background: #0057b8;
+            color: white;
+            border: none;
+            padding: 13px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .button:hover {
+            background: #00428c;
+        }
+
+        /* DELIVERY LIST */
+
+        .delivery-section {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+        }
+
+        .delivery-section h2 {
+            margin-bottom: 20px;
+        }
+
+        .delivery {
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 18px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .delivery-id {
+            color: #0057b8;
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+
+        .customer {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .product {
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .status {
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .dispatched {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .out {
+            background: #cfe2ff;
+            color: #084298;
+        }
+
+        .delivered {
+            background: #d1e7dd;
+            color: #0f5132;
+        }
+
+        .delayed {
+            background: #f8d7da;
+            color: #842029;
+        }
+
+        /* MODAL */
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: white;
+            width: 100%;
+            max-width: 500px;
+            padding: 30px;
+            border-radius: 12px;
+        }
+
+        .modal-content h2 {
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #ccc;
+            border-radius: 7px;
+        }
+
+        .form-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .cancel {
+            background: #777;
+        }
+
+        /* MOBILE */
+
+        @media (max-width: 700px) {
+
+            header {
+                padding: 15px;
+            }
+
+            .container {
+                padding: 18px;
+            }
+
+            .cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .actions {
+                flex-direction: column;
+                gap: 12px;
+                align-items: stretch;
+            }
+
+            .search {
+                width: 100%;
+            }
+
+            .delivery {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <!-- HEADER -->
+
+    <header>
+
+        <div class="logo">
+            IFB
+        </div>
+
+        <div class="app-name">
+            Delivery Tracker
+        </div>
+
+    </header>
+
+
+    <!-- MAIN CONTENT -->
+
+    <div class="container">
+
+        <div class="welcome">
+
+            <h1>Delivery Dashboard</h1>
+
+            <p>
+                Track IFB products from warehouse to customer.
+            </p>
+
+        </div>
+
+
+        <!-- SUMMARY CARDS -->
+
+        <div class="cards">
+
+            <div class="card">
+                <div class="card-title">
+                    Total Deliveries
+                </div>
+
+                <div class="card-number" id="total">
+                    3
+                </div>
+            </div>
+
+
+            <div class="card">
+                <div class="card-title">
+                    Dispatched
+                </div>
+
+                <div class="card-number" id="dispatched">
+                    1
+                </div>
+            </div>
+
+
+            <div class="card">
+                <div class="card-title">
+                    Out for Delivery
+                </div>
+
+                <div class="card-number" id="out">
+                    1
+                </div>
+            </div>
+
+
+            <div class="card">
+                <div class="card-title">
+                    Delivered
+                </div>
+
+                <div class="card-number" id="delivered">
+                    1
+                </div>
+            </div>
+
+        </div>
+
+
+        <!-- SEARCH AND CREATE -->
+
+        <div class="actions">
+
+            <input
+                type="text"
+                id="search"
+                class="search"
+                placeholder="Search Delivery ID or Customer"
+                onkeyup="searchDeliveries()"
+            >
+
+            <button
+                class="button"
+                onclick="openForm()"
+            >
+                + Create Delivery
+            </button>
+
+        </div>
+
+
+        <!-- DELIVERY LIST -->
+
+        <div class="delivery-section">
+
+            <h2>Recent Deliveries</h2>
+
+            <div id="deliveryList">
+
+                <div class="delivery">
+
+                    <div>
+
+                        <div class="delivery-id">
+                            IFB-KOC-0001
+                        </div>
+
+                        <div class="customer">
+                            Rahul
+                        </div>
+
+                        <div class="product">
+                            IFB Washing Machine - 9 Kg
+                        </div>
+
+                    </div>
+
+                    <div class="status dispatched">
+                        Dispatched
+                    </div>
+
+                </div>
+
+
+                <div class="delivery">
+
+                    <div>
+
+                        <div class="delivery-id">
+                            IFB-KOC-0002
+                        </div>
+
+                        <div class="customer">
+                            Arun
+                        </div>
+
+                        <div class="product">
+                            IFB Air Conditioner - 1.5 Ton
+                        </div>
+
+                    </div>
+
+                    <div class="status out">
+                        Out for Delivery
+                    </div>
+
+                </div>
+
+
+                <div class="delivery">
+
+                    <div>
+
+                        <div class="delivery-id">
+                            IFB-KOC-0003
+                        </div>
+
+                        <div class="customer">
+                            Meera
+                        </div>
+
+                        <div class="product">
+                            IFB Refrigerator - 450 L
+                        </div>
+
+                    </div>
+
+                    <div class="status delivered">
+                        Delivered
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- CREATE DELIVERY POPUP -->
+
+    <div
+        class="modal"
+        id="deliveryModal"
+    >
+
+        <div class="modal-content">
+
+            <h2>Create Delivery</h2>
+
+
+            <div class="form-group">
+
+                <label>
+                    Delivery ID
+                </label>
+
+                <input
+                    type="text"
+                    id="deliveryId"
+                    placeholder="Example: IFB-KOC-0004"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Customer Name
+                </label>
+
+                <input
+                    type="text"
+                    id="customerName"
+                    placeholder="Customer name"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Product
+                </label>
+
+                <input
+                    type="text"
+                    id="productName"
+                    placeholder="Example: IFB Washing Machine"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Model
+                </label>
+
+                <input
+                    type="text"
+                    id="model"
+                    placeholder="Model number"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Status
+                </label>
+
+                <select id="deliveryStatus">
+
+                    <option value="Dispatched">
+                        Dispatched
+                    </option>
+
+                    <option value="Out for Delivery">
+                        Out for Delivery
+                    </option>
+
+                    <option value="Delivered">
+                        Delivered
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="form-buttons">
+
+                <button
+                    class="button"
+                    onclick="createDelivery()"
+                >
+                    Create Delivery
+                </button>
+
+                <button
+                    class="button cancel"
+                    onclick="closeForm()"
+                >
+                    Cancel
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <script>
+
+        function openForm() {
+
+            document.getElementById("deliveryModal").style.display = "flex";
+
+        }
+
+
+        function closeForm() {
+
+            document.getElementById("deliveryModal").style.display = "none";
+
+        }
+
+
+        function createDelivery() {
+
+            let id =
+                document.getElementById("deliveryId").value;
+
+            let customer =
+                document.getElementById("customerName").value;
+
+            let product =
+                document.getElementById("productName").value;
+
+            let model =
+                document.getElementById("model").value;
+
+            let status =
+                document.getElementById("deliveryStatus").value;
+
+
+            if (
+                id === "" ||
+                customer === "" ||
+                product === ""
+            ) {
+
+                alert("Please fill Delivery ID, Customer Name and Product.");
+
+                return;
+
+            }
+
+
+            let statusClass = "dispatched";
+
+
+            if (status === "Out for Delivery") {
+
+                statusClass = "out";
+
+            }
+
+
+            if (status === "Delivered") {
+
+                statusClass = "delivered";
+
+            }
+
+
+            let newDelivery = document.createElement("div");
+
+            newDelivery.className = "delivery";
+
+            newDelivery.innerHTML = `
+
+                <div>
+
+                    <div class="delivery-id">
+                        ${id}
+                    </div>
+
+                    <div class="customer">
+                        ${customer}
+                    </div>
+
+                    <div class="product">
+                        ${product} - ${model}
+                    </div>
+
+                </div>
+
+                <div class="status ${statusClass}">
+                    ${status}
+                </div>
+
+            `;
+
+
+            document
+                .getElementById("deliveryList")
+                .prepend(newDelivery);
+
+
+            closeForm();
+
+
+            document.getElementById("deliveryId").value = "";
+            document.getElementById("customerName").value = "";
+            document.getElementById("productName").value = "";
+            document.getElementById("model").value = "";
+
+        }
+
+
+        function searchDeliveries() {
+
+            let search =
+                document
+                .getElementById("search")
+                .value
+                .toLowerCase();
+
+
+            let deliveries =
+                document
+                .querySelectorAll(".delivery");
+
+
+            deliveries.forEach(function(delivery) {
+
+                let text =
+                    delivery.innerText.toLowerCase();
+
+
+                if (text.includes(search)) {
+
+                    delivery.style.display = "flex";
+
+                }
+
+                else {
+
+                    delivery.style.display = "none";
+
+                }
+
+            });
+
+        }
+
+    </script>
+
+</body>
+
+</html>
